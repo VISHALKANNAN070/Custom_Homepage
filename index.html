@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Terminal Homepage</title>
     <style>
         /* --- CSS STYLES --- */
@@ -34,6 +34,15 @@
             display: flex;
             flex-direction: column;
             gap: 18px;
+        }
+
+        /* NEW: header container to center the welcome + clock horizontally */
+        .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;      /* centers children horizontally */
+            text-align: center;       /* center text inside children */
+            gap: 6px;
         }
 
         /* Typography & Utilities */
@@ -110,15 +119,19 @@
         /* Responsiveness */
         @media (max-width: 720px) {
             body { padding: 12px; }
+            .wrap { padding: 0 6px; }
         }
     </style>
 </head>
 <body>
 
     <main class="wrap">
-        <div class="ascii">=========================================</div>
-        <div class="title-row">terminal_homepage :: <span id="clock">--:--:--</span></div>
-        <div class="ascii">=========================================</div>
+        <!-- wrapped the ascii + title-row + ascii in a centered header -->
+        <div class="header">
+            <div class="ascii">=========================================</div>
+            <div class="title-row">Welcome Vishal : <span id="clock">--:--:--</span></div>
+            <div class="ascii">=========================================</div>
+        </div>
 
         <form class="search-form" id="searchForm">
             <label class="muted" for="q">$ search</label>
@@ -154,7 +167,7 @@
             { title: "REDDIT", url: "https://reddit.com" },
             { title: "CHATGPT", url: "https://chat.openai.com" },
             { title: "WEATHER", url: "https://weather.com" },
-            { title: "LOCALHOST", url: "http://localhost:3000" } 
+            { title: "LOCALHOST", url: "http://localhost:3000" }
         ];
 
         const ENGINE_KEY = "homescreen_engine_simple_v2";
