@@ -42,12 +42,12 @@
             flex-direction: column;
             align-items: center;      /* centers children horizontally */
             text-align: center;       /* center text inside children */
-            gap: 6px;
         }
 
         /* Typography & Utilities */
         .ascii { color: #007744; white-space: pre; font-size: 13px; }
         .title-row { font-size: 13px; margin-bottom: 8px;}
+        .title-header { font-size: 20px; margin:40px;}
         .muted { color: var(--muted-color); font-size: 13px; }
         .divider { color: #004422; margin: 10px 0; }
 
@@ -128,9 +128,7 @@
     <main class="wrap">
         <!-- wrapped the ascii + title-row + ascii in a centered header -->
         <div class="header">
-            <div class="ascii">=========================================</div>
-            <div class="title-row">Welcome Vishal : <span id="clock">--:--:--</span></div>
-            <div class="ascii">=========================================</div>
+            <div class="title-header">Welcome Vishal : <span id="clock">--:--:--</span></div>
         </div>
 
         <form class="search-form" id="searchForm">
@@ -166,8 +164,7 @@
             { title: "YOUTUBE", url: "https://youtube.com" },
             { title: "REDDIT", url: "https://reddit.com" },
             { title: "CHATGPT", url: "https://chat.openai.com" },
-            { title: "WEATHER", url: "https://weather.com" },
-            { title: "LOCALHOST", url: "http://localhost:3000" }
+            { title: "WHATSAPP", url: "https://web.whatsapp.com/" },
         ];
 
         const ENGINE_KEY = "homescreen_engine_simple_v2";
