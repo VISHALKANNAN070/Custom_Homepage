@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terminal Homepage</title>
+    <style>
+        /* --- CSS STYLES --- */
+        :root {
+            --bg-color: #000000;
+            --main-color: #00ff66;
+            --muted-color: #009944;
+            --border-color: #081008;
+            --hover-bg: #001100;
+            --hover-text: #33ff88;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            background-color: var(--bg-color);
+            color: var(--main-color);
+            font-family: 'Courier New', Courier, monospace;
+            padding: 28px;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .wrap {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        /* Typography & Utilities */
+        .ascii { color: #007744; white-space: pre; font-size: 13px; }
+        .title-row { font-size: 13px; margin-bottom: 8px;}
+        .muted { color: var(--muted-color); font-size: 13px; }
+        .divider { color: #004422; margin: 10px 0; }
+
+        /* Inputs */
+        .input {
+            flex: 1;
+            padding: 10px;
+            background: transparent;
+            border: 1px solid #0b0b0b;
+            color: inherit;
+            font-family: inherit;
+            outline: none;
+        }
+        .input:focus { border-color: var(--muted-color); }
+
+        .btn {
+            padding: 8px 12px;
+            background: transparent;
+            border: 1px solid #003300;
+            color: inherit;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+        .btn:hover { border-color: var(--main-color); color: var(--hover-text); }
+
+        /* Search Section */
+        .search-form { display: flex; gap: 8px; align-items: center; }
+
+        /* Controls (Engine Select) */
+        .engine-select {
+            background: transparent;
+            color: var(--muted-color);
+            border: none;
+            padding: 4px;
+            font-family: inherit;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .engine-select option { background: #000; color: var(--main-color); }
+
+        /* Links List - The Clickable Containers */
+        .links-container { display: flex; flex-direction: column; gap: 0px; }
+        
+        .link-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer; 
+            transition: background-color 0.15s, padding-left 0.15s;
+        }
+        
+        /* Hover Effect */
+        .link-row:hover {
+            background-color: var(--hover-bg);
+            color: var(--hover-text);
+            padding-left: 15px; 
+        }
+
+        .link-meta { display: flex; flex-direction: column; pointer-events: none; }
+        .link-title { font-weight: 600; font-size: 14px; }
+        .link-url { font-size: 12px; color: #00cc55; opacity: 0.7; margin-top: 2px; }
+        
+        .link-arrow { opacity: 0; transition: opacity 0.2s; }
+        .link-row:hover .link-arrow { opacity: 1; }
+
+        /* Responsiveness */
+        @media (max-width: 720px) {
+            body { padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="wrap">
+        <div class="ascii">=========================================</div>
+        <div class="title-row">terminal_homepage :: <span id="clock">--:--:--</span></div>
+        <div class="ascii">=========================================</div>
+
+        <form class="search-form" id="searchForm">
+            <label class="muted" for="q">$ search</label>
+            <input id="q" type="text" class="input" placeholder="type query or URL..." autocomplete="off" autofocus>
+            <button type="submit" class="btn">go</button>
+        </form>
+
+        <div class="divider">-----------------------------------------</div>
+
+        <section>
+            <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+                <div class="title-row">$ links</div>
+                <select id="engineSelect" class="engine-select">
+                    <option value="https://www.google.com/search?q=">google</option>
+                    <option value="https://duckduckgo.com/?q=">duckduckgo</option>
+                    <option value="https://www.bing.com/search?q=">bing</option>
+                </select>
+            </div>
+
+            <div class="links-container" id="linksList">
+                </div>
+        </section>
+
+        </main>
+
+    <script>
+        // --- CONFIG ---
+        // EDIT YOUR LINKS HERE
+        const LINKS = [
+            { title: "GMAIL", url: "https://mail.google.com" },
+            { title: "GITHUB", url: "https://github.com" },
+            { title: "YOUTUBE", url: "https://youtube.com" },
+            { title: "REDDIT", url: "https://reddit.com" },
+            { title: "CHATGPT", url: "https://chat.openai.com" },
+            { title: "WEATHER", url: "https://weather.com" },
+            { title: "LOCALHOST", url: "http://localhost:3000" } 
+        ];
+
+        const ENGINE_KEY = "homescreen_engine_simple_v2";
+        let searchEngine = localStorage.getItem(ENGINE_KEY) || "https://www.google.com/search?q=";
+
+        // --- DOM ELEMENTS ---
+        const clockEl = document.getElementById('clock');
+        const searchForm = document.getElementById('searchForm');
+        const searchInput = document.getElementById('q');
+        const linksListEl = document.getElementById('linksList');
+        const engineSelect = document.getElementById('engineSelect');
+
+        // --- CLOCK ---
+        function tick() {
+            const now = new Date();
+            const time = now.toLocaleTimeString('en-US', { hour12: false });
+            const date = now.toLocaleDateString();
+            clockEl.textContent = `${time} — ${date}`;
+        }
+        setInterval(tick, 1000);
+        tick();
+
+        // --- RENDER LINKS ---
+        function renderLinks() {
+            linksListEl.innerHTML = ''; 
+            
+            LINKS.forEach(link => {
+                const row = document.createElement('div');
+                row.className = 'link-row';
+                
+                row.innerHTML = `
+                    <div class="link-meta">
+                        <div class="link-title">${escapeHtml(link.title)}</div>
+                        <div class="link-url">${escapeHtml(link.url)}</div>
+                    </div>
+                    <div class="link-arrow">&lt;DIR&gt;</div>
+                `;
+
+                // MAKE CONTAINER CLICKABLE
+                row.addEventListener('click', () => {
+                    window.open(link.url, '_blank');
+                });
+
+                linksListEl.appendChild(row);
+            });
+        }
+
+        // --- SEARCH ---
+        searchForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const query = searchInput.value.trim();
+            if (!query) return;
+
+            const isUrl = query.startsWith('http') || (query.includes('.') && !query.includes(' '));
+            
+            if (isUrl) {
+                const url = query.startsWith('http') ? query : `https://${query}`;
+                window.location.href = url;
+            } else {
+                window.location.href = searchEngine + encodeURIComponent(query);
+            }
+        });
+
+        // --- ENGINE SELECTION ---
+        engineSelect.value = searchEngine;
+        engineSelect.addEventListener('change', (e) => {
+            searchEngine = e.target.value;
+            localStorage.setItem(ENGINE_KEY, searchEngine);
+        });
+
+        // --- KEYBOARD SHORTCUT (/) ---
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '/' && document.activeElement !== searchInput) {
+                e.preventDefault();
+                searchInput.focus();
+            }
+        });
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initial Render
+        renderLinks();
+
+    </script>
+</body>
+</html>
